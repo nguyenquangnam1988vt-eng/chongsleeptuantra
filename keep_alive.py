@@ -2,6 +2,7 @@ from flask import Flask
 from threading import Thread
 import time
 import requests
+import random
 
 app = Flask(__name__)
 
@@ -19,7 +20,10 @@ def keep_alive():
     URL = "https://tuantrathanhmieunew.streamlit.app"
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+        "User-Agent": random.choice([
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        ]),
         "Accept": "text/html,application/xhtml+xml"
     }
 
@@ -27,20 +31,18 @@ def keep_alive():
         try:
             print("👉 Ping Streamlit...")
 
-            res = requests.get(
-                URL,
-                headers=headers,
-                timeout=20
-            )
+            res = requests.get(URL, headers=headers, timeout=60)
 
             print("✅ Status:", res.status_code)
-            time.sleep(240)
+
+            # giả lập người dùng "ở lại trang"
+            time.sleep(random.randint(10, 20))
 
         except Exception as e:
             print("❌ Error:", e)
 
-        print("⏱ Sleep 3 minutes...\n")
-        time.sleep(180)  # 3 phút (ổn định hơn 5 phút)
+        print("⏱ Sleep ~4 phút...\n")
+        time.sleep(random.randint(200, 260))
 
 if __name__ == "__main__":
     print("🚀 App starting...")

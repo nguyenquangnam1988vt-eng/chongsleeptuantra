@@ -1,22 +1,40 @@
+from flask import Flask
+from threading import Thread
 from playwright.sync_api import sync_playwright
 import time
 
-URL = "https://tuantrathanhmieunew.streamlit.app"
+app = Flask(__name__)
 
-while True:
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
+@app.route("/")
+def home():
+    return "OK"
 
-            page.goto(URL, timeout=60000)
-            time.sleep(10)
+def run_server():
+    app.run(host="0.0.0.0", port=10000)
 
-            browser.close()
-            print("Ping OK")
+def keep_alive():
+    URL = "https://tuantrathanhmieunew.streamlit.app"
 
-    except Exception as e:
-        print("Error:", e)
+    while True:
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=["--no-sandbox", "--disable-dev-shm-usage"]
+                )
+                page = browser.new_page()
 
-    time.sleep(300)
-page.goto(URL, timeout=60000, wait_until="load")
+                page.goto(URL, timeout=60000)
+                time.sleep(10)
+
+                browser.close()
+                print("Ping OK")
+
+        except Exception as e:
+            print("Error:", e)
+
+        time.sleep(300)
+
+if __name__ == "__main__":
+    Thread(target=keep_alive).start()
+    run_server()

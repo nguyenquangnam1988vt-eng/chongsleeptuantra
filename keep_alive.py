@@ -17,18 +17,20 @@ def run_server():
 def keep_alive():
     URL = "https://tuantrathanhmieunew.streamlit.app/?ping=1"
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu"
-            ]
-        )
+    while True:
+        try:
+            print("Đang khởi động Playwright...")
 
-        while True:
-            try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=[
+                        "--no-sandbox",
+                        "--disable-dev-shm-usage",
+                        "--disable-gpu"
+                    ]
+                )
+
                 page = browser.new_page()
 
                 print("Đang vào web...")
@@ -36,23 +38,18 @@ def keep_alive():
                 page.goto(
                     URL,
                     timeout=60000,
-                    wait_until="networkidle"   # 🔥 đợi load thật sự
+                    wait_until="networkidle"
                 )
 
-                # 🔥 giả lập user thật
-                page.mouse.move(100, 200)
-                page.mouse.wheel(0, 500)
-
-                # 🔥 giữ lâu hơn
                 time.sleep(20)
 
-                page.close()
+                browser.close()
                 print("Ping OK")
 
-            except Exception as e:
-                print("Error:", e)
+        except Exception as e:
+            print("Lỗi Playwright:", e)
 
-            time.sleep(300)  # 5 phút
+        time.sleep(300)
 
 if __name__ == "__main__":
     Thread(target=keep_alive).start()

@@ -19,3 +19,4 @@ while True:
         print("Error:", e)
 
     time.sleep(300)
+page.goto(URL, timeout=60000, wait_until="load")

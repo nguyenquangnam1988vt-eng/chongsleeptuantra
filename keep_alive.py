@@ -34,6 +34,7 @@ def keep_alive():
             )
 
             print("✅ Status:", res.status_code)
+            time.sleep(240)
 
         except Exception as e:
             print("❌ Error:", e)

@@ -16,7 +16,7 @@ def run_server():
 def keep_alive():
     print("🔥 Thread keep_alive đã chạy")
 
-    URL = "https://tuantrathanhmieunew.streamlit.app/?ping=1"
+    URL = "https://tuantrathanhmieunew.streamlit.app/?force_wake=1"
 
     while True:
         try:

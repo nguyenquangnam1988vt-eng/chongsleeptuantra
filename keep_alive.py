@@ -11,7 +11,6 @@ def home():
     return "OK"
 
 def run_server():
-    print("🌐 Flask server starting...")
     app.run(host="0.0.0.0", port=10000)
 
 def keep_alive():
@@ -20,29 +19,37 @@ def keep_alive():
     URL = "https://tuantrathanhmieunew.streamlit.app"
 
     headers = {
-        "User-Agent": random.choice([
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-        ]),
-        "Accept": "text/html,application/xhtml+xml"
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "text/html"
     }
 
     while True:
         try:
-            print("👉 Ping Streamlit...")
+            print("👉 Giả lập người dùng truy cập...")
 
-            res = requests.get(URL, headers=headers, timeout=60)
+            # 1. Load trang chính
+            res = requests.get(URL, headers=headers, timeout=20)
+            print("✅ Main:", res.status_code)
 
-            print("✅ Status:", res.status_code)
+            time.sleep(random.uniform(2, 5))
 
-            # giả lập người dùng "ở lại trang"
-            time.sleep(random.randint(10, 20))
+            # 2. Gọi health check (Streamlit nội bộ)
+            res2 = requests.get(URL + "/_stcore/health", timeout=10)
+            print("✅ Health:", res2.status_code)
+
+            time.sleep(random.uniform(2, 5))
+
+            # 3. Gọi thêm 1 lần nữa (giống user reload nhẹ)
+            res3 = requests.get(URL, headers=headers, timeout=20)
+            print("✅ Reload:", res3.status_code)
 
         except Exception as e:
             print("❌ Error:", e)
 
-        print("⏱ Sleep ~4 phút...\n")
-        time.sleep(random.randint(200, 260))
+        # nghỉ 3–4 phút
+        sleep_time = random.randint(180, 240)
+        print(f"⏱ Sleep {sleep_time}s...\n")
+        time.sleep(sleep_time)
 
 if __name__ == "__main__":
     print("🚀 App starting...")

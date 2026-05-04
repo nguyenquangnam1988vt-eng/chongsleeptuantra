@@ -27,40 +27,38 @@ def keep_alive():
             print("👉 Bắt đầu vòng lặp mới")
 
             print("👉 Khởi động Playwright")
-            with sync_playwright() as p:
+            p = sync_playwright().start()
 
-                print("👉 Mở browser")
-                browser = p.chromium.launch(
-                    headless=True,
-                    args=[
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage",
-                        "--disable-gpu"
-                    ]
-                )
+            print("👉 Mở browser")
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--no-zygote",
+                    "--single-process"
+                ]
+            )
 
-                print("👉 Tạo page")
-                page = browser.new_page()
+            print("👉 Tạo page")
+            page = browser.new_page()
 
-                print("👉 Đang vào web...")
-                page.goto(
-                    URL,
-                    timeout=60000,
-                    wait_until="networkidle"
-                )
+            print("👉 Đang vào web...")
+            page.goto(URL, timeout=60000)
 
-                print("👉 Đã vào web, giữ 20s")
-                time.sleep(20)
+            print("👉 Giữ 20s")
+            time.sleep(20)
 
-                browser.close()
-                print("✅ Ping OK")
+            browser.close()
+            p.stop()
+
+            print("✅ Ping OK")
 
         except Exception as e:
-            print("❌ Lỗi Playwright:")
-            print(e)
-            traceback.print_exc()   # 🔥 in full lỗi
+            print("❌ Lỗi:", e)
 
-        print("⏱ Ngủ 5 phút...\n")
         time.sleep(300)
 
 if __name__ == "__main__":

@@ -1,11 +1,7 @@
 from flask import Flask
 from threading import Thread
-from playwright.sync_api import sync_playwright
 import time
-import os
-import traceback
-
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
+import requests
 
 app = Flask(__name__)
 
@@ -24,48 +20,22 @@ def keep_alive():
 
     while True:
         try:
-            print("👉 Bắt đầu vòng lặp mới")
+            print("👉 Đang ping Streamlit...")
+            res = requests.get(URL, timeout=30)
 
-            print("👉 Khởi động Playwright")
-            p = sync_playwright().start()
-
-            print("👉 Mở browser")
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--no-zygote",
-                    "--single-process"
-                ]
-            )
-
-            print("👉 Tạo page")
-            page = browser.new_page()
-
-            print("👉 Đang vào web...")
-            page.goto(URL, timeout=60000)
-
-            print("👉 Giữ 20s")
-            time.sleep(20)
-
-            browser.close()
-            p.stop()
-
-            print("✅ Ping OK")
+            print("✅ Status:", res.status_code)
 
         except Exception as e:
             print("❌ Lỗi:", e)
 
+        print("⏱ Ngủ 5 phút...\n")
         time.sleep(300)
 
 if __name__ == "__main__":
     print("🚀 App start")
 
     t = Thread(target=keep_alive)
-    t.daemon = True   # 🔥 QUAN TRỌNG
+    t.daemon = True
     t.start()
 
     print("✅ Thread đã start")
